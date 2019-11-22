@@ -41,3 +41,8 @@ def login():
 def check_user():
     token = request.json.get('Token', None)
     return jsonify({'logged_in': True}) if token == t else jsonify({'logged_in': False})
+
+@app.route('/logout', methods=['GET', 'POST'])
+def logout():
+    t = ""
+    return jsonify({'logged_in': False})

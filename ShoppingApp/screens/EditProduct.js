@@ -7,7 +7,11 @@ import { Ionicons } from '@expo/vector-icons';
 const EditProduct = props => {
     return (
         <View style={styles.screen}>
-            <Header title="EDIT PRODUCT">
+            <Header
+            title="EDIT PRODUCT" 
+            onButtonPressed={() => props.navigation.navigate('Shop')}
+            onMenuPressed={() => props.navigation.openDrawer()}
+        >
                 <Ionicons name='ios-checkmark-circle' size={35} color='white' />
             </Header>
             <ScrollView style={styles.scroll}>

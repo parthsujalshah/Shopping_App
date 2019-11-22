@@ -4,7 +4,7 @@ import { getAppLoadingLifecycleEmitter } from 'expo/build/launch/AppLoading';
 
 const IconButton = props => {
     return (
-        <TouchableOpacity>
+        <TouchableOpacity onPress={props.onIconPressed}>
             <View style={styles.button}>
                 <Text>{props.children}</Text>
             </View>

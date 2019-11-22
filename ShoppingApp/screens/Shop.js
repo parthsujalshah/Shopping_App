@@ -17,7 +17,11 @@ const http = axios.create({
 const Shop = props => {
     return (
         <View style={styles.screen}>
-            <Header title="ALL PRODUCTS" navigation={() => {}}>
+            <Header
+                title="ALL PRODUCTS"
+                onButtonPressed={() => props.navigation.navigate('Cart')}
+                onMenuPressed={() => props.navigation.openDrawer()}
+            >
                 <Ionicons name='ios-cart' size={35} color='white' />
             </Header>
             <View style={styles.list}>
@@ -31,7 +35,7 @@ const Shop = props => {
                             <BoldText style={{marginVertical: 2}}>{item.name}</BoldText>
                             <BodyText style={{marginVertical: 2}}>{item.price}</BodyText>
                             <View style={styles.buttonContainer}>
-                                <CustomButton>VIEW DETAILS</CustomButton>
+                                <CustomButton onPress={() => props.navigation.navigate('Details')}>VIEW DETAILS</CustomButton>
                                 <CustomButton>TO CART</CustomButton>
                             </View>
                         </Card>
@@ -39,24 +43,6 @@ const Shop = props => {
                     extraData={itemList}
                     keyExtractor={(item, index) => index.toString()}
                 />
-                {/* <Card style={styles.card}>
-                    <View style={styles.image}>
-                        <Image style={{ width: '100%', height: '100%' }} source={require('../assets/images/shoes.jpeg')} />
-                    </View>
-                    <View style={styles.buttonContainer}>
-                        <CustomButton>VIEW DETAILS</CustomButton>
-                        <CustomButton>TO CART</CustomButton>
-                    </View>
-                </Card>
-                <Card style={styles.card}>
-                    <View style={styles.image}>
-                        <Image style={{ width: '100%', height: '100%' }} source={require('../assets/images/shoes.jpeg')} />
-                    </View>
-                    <View style={styles.buttonContainer}>
-                        <CustomButton>VIEW DETAILS</CustomButton>
-                        <CustomButton>TO CART</CustomButton>
-                    </View>
-                </Card> */}
             </View>
         </View>
     );

@@ -8,7 +8,7 @@ import itemList from '../constants/ItemList';
 const Cart = props => {
     return (
         <View style={styles.screen}>
-            <Header title="CART"></Header>
+            <Header title="CART" onMenuPressed={() => props.navigation.openDrawer()}></Header>
             <View style={styles.headingContainer}>
                 <BoldText style={styles.heading}>Items in the Cart</BoldText>
             </View>
@@ -16,7 +16,11 @@ const Cart = props => {
                 data={itemList}
                 renderItem={({ item }) => (
                     <View style={styles.list}>
-                        <TouchableOpacity activeOpacity={0.5} style={styles.list}>
+                        <TouchableOpacity 
+                            activeOpacity={0.5}
+                            style={styles.list}
+                            onPress={() => props.navigation.navigate('Details')}
+                        >
                             <View style={styles.imageView}>
                                 <Image style={{ resizeMode: 'center', height: 100, width: 100 }} source={require('../assets/images/test.jpg')} />
                             </View>

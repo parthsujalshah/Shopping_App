@@ -9,7 +9,7 @@ import IconButton from './IconButton';
 const Header = props => {
     return (
         <View style={styles.header}>
-            <IconButton>
+            <IconButton onIconPressed={props.onMenuPressed}>
                 <Ionicons name="ios-menu" size={35} color='#d4bc0d' />
             </IconButton>
             <BoldText style={{ color: '#d4bc0d' }}>{props.title}</BoldText>

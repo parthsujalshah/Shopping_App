@@ -8,7 +8,7 @@ import CustomButton from '../components/CustomButton';
 const Details = props => {
     return (
         <View style={styles.screen}>
-            <Header title={props.name}>
+            <Header onMenuPressed={() => props.navigation.openDrawer()}>
                 {/* <Ionicons name='ios-arrow-back' size={35} color='white' /> */}
             </Header>
             <View style={styles.imageView}>
