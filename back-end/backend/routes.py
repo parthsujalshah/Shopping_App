@@ -44,5 +44,6 @@ def check_user():
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
+    global t
     t = ""
     return jsonify({'logged_in': False})

@@ -20,6 +20,8 @@ const http = axios.create({
     baseURL: serverUrl
 });
 
+let isLoggedIn = true; //if initialized null it is considered to be false in if statement
+
 const DrawerStyle = (props) => (
     <SafeAreaView style={{flex: 1, marginTop: 100}}>
         <ScrollView>
@@ -47,15 +49,15 @@ const DrawerStyle = (props) => (
                 onPress={() => {
                     http
                         .post('/logout')
-                        .then(
-                            async (res) => {
-                                await AsyncStorage.setItem("auth_token", null)
-                                if (!res.data.logged_in) {
-                                    props.navigation.navigate('Login')
-                                }
+                        .then(res => {
+                                isLoggedIn = res.data.logged_in;
                             }
                         )
-                }}
+                        if(!isLoggedIn){
+                            props.navigation.navigate('Login');
+                        }
+                    }
+                }
             >
                 <Text style={{color: '#fcba03'}}>Log Out</Text>
             </Button>
@@ -64,7 +66,12 @@ const DrawerStyle = (props) => (
 );
 
 const LoginRegisterNavigator = createStackNavigator({
-    Login: {screen: LoginScreen},
+    Login: {
+        screen: LoginScreen,
+        navigationOptions: {
+            drawerLockMode: 'locked-closed'
+        }
+    },
     Register: {screen: RegisterScreen},
     Shop: {screen: ShopScreen},
     Details: {screen: DetailsScreen}
@@ -77,8 +84,7 @@ const ShopNavigator = createDrawerNavigator({
     Login: {
         screen: LoginRegisterNavigator,
         navigationOptions: {
-            drawerLabel: () => null,
-            drawerLockMode: 'locked-closed'
+            drawerLabel: () => null
         }
     },
     Shop: {
@@ -102,8 +108,8 @@ const ShopNavigator = createDrawerNavigator({
     Orders: {screen: OrdersScreen},
 }, {
     headerMode: 'none',
-    // initialRouteName: 'Login',// temporary
-    initialRouteName: 'Shop',
+    initialRouteName: 'Login',// temporary
+    // initialRouteName: 'Shop',
     contentOptions: {
         activeTintColor: '#fcba03'
     },

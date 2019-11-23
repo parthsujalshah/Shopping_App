@@ -17,11 +17,16 @@ const LoginRegister = props => {
     const [password, setPassword] = useState("");
     const [Token, setToken] = useState("");
     const [loading, setLoading] = useState(true);
+    const getToken = async () => {
+        tkn = await AsyncStorage.getItem("auth_token");
+        return tkn
+    };
 
     useEffect(() => {
+        tkn = getToken();
         http
             .post('/login-check', {
-                Token
+                tkn
             })
             .then(res => {
                 setLoading(false);
@@ -47,7 +52,6 @@ const LoginRegister = props => {
 
     const SetToken = async (token, props) => {
         await AsyncStorage.setItem("auth_token", token);
-        setToken(token);
         props.navigation.navigate('Shop')
     };
 

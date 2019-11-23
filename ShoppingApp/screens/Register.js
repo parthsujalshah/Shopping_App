@@ -23,6 +23,7 @@ const Register = props => {
             email,
             password
         });
+        props.navigation.navigate('Login')
     };
 
     return(
