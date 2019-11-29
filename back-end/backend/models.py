@@ -5,20 +5,21 @@ class User(db.Model):
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
-    cart = db.relationship('Product', backref='cart', lazy=True)
-    ordered_items = db.relationship('Product', backref='ordered_items', lazy=True)
+    # ordered_items = db.relationship('Product', backref='uploaded_item', lazy=True)
+    # bought_items = db.relationship('Product', backref='cart_item', lazy=True)
 
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"
 
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
+    image_file = db.Column(db.Text, nullable=False)
     name = db.Column(db.String(20), nullable=False)
     company = db.Column(db.String(20), nullable=False)
     price = db.Column(db.String(20), nullable=False)
     description = db.Column(db.Text, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    # consumer_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    # seller_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
         return f"Product('{self.name}', '{self.company}', '{self.price}', '{self.description}')"
