@@ -1,7 +1,7 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {SafeAreaView, ScrollView, Dimensions, View} from 'react-native';
-import {createAppContainer} from 'react-navigation'
-import {createDrawerNavigator, DrawerItems} from 'react-navigation-drawer'
+import {createAppContainer, createSwitchNavigator} from 'react-navigation';
+import {createDrawerNavigator, DrawerItems} from 'react-navigation-drawer';
 import {createStackNavigator} from 'react-navigation-stack';
 
 import ShopScreen from '../screens/Shop';
@@ -11,7 +11,7 @@ import EditProductsScreen from '../screens/EditProduct';
 import OrdersScreen from '../screens/Orders';
 import LoginScreen from '../screens/Login';
 import RegisterScreen from '../screens/Register';
-import { Text, Image, AsyncStorage } from 'react-native';
+import { Text, Image } from 'react-native';
 import { Button } from 'native-base';
 import axios from 'axios';
 
@@ -65,7 +65,7 @@ const DrawerStyle = (props) => (
     </SafeAreaView>
 );
 
-const LoginRegisterNavigator = createStackNavigator({
+const LoginRegisterNavigator = createSwitchNavigator({
     Login: {
         screen: LoginScreen,
         navigationOptions: {
@@ -73,11 +73,18 @@ const LoginRegisterNavigator = createStackNavigator({
         }
     },
     Register: {screen: RegisterScreen},
+    Shop: {screen: ShopScreen}
+}, {
+    headerMode: 'none',
+    initialRouteName: 'Login'
+});
+
+const ShopDetailsNavigator = createStackNavigator({
     Shop: {screen: ShopScreen},
     Details: {screen: DetailsScreen}
 }, {
     headerMode: 'none',
-    initialRouteName: 'Login'
+    initialRouteName: 'Shop'
 });
 
 const ShopNavigator = createDrawerNavigator({
@@ -88,9 +95,16 @@ const ShopNavigator = createDrawerNavigator({
         }
     },
     Shop: {
-        screen: ShopScreen,
+        screen: ShopDetailsNavigator,
         navigationOptions: {
-            drawerLabel: 'Home'
+            drawerLabel: 'Home',
+        }
+    },
+    Details: {
+        screen: DetailsScreen,
+        navigationOptions: {
+            drawerLabel: 'Home',
+            drawerLabel: () => null
         }
     },
     Cart: {

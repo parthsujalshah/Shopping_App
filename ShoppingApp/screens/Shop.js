@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { View, FlatList, StyleSheet, Image, AsyncStorage } from 'react-native';
+import { View, FlatList, StyleSheet, Image, AsyncStorage, BackHandler } from 'react-native';
 import Card from '../components/Card';
 import Header from '../components/Header';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,7 +9,7 @@ import BoldText from '../components/BoldText';
 import BodyText from '../components/BodyText';
 import axios from 'axios';
 
-// LOGOUT ON BACK PRESSING & INFINITE SERVER RESPONSE
+// INFINITE SERVER RESPONSE
 
 const serverUrl = 'http://192.168.137.1:5000';
 const http = axios.create({
@@ -26,7 +26,6 @@ const Shop = props => {
             .post('/home', {onHome})
             .then(res => {
                 setItemList(res.data);
-                console.log(res.data);
             })
     });
 
