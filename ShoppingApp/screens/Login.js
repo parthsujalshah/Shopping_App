@@ -34,7 +34,7 @@ const LoginRegister = props => {
                     props.navigation.navigate('Shop');
                 }
             })
-    });
+    },[]);
 
     const logIn = () => {
         http
