@@ -27,7 +27,7 @@ const Shop = props => {
             .then(res => {
                 setItemList(res.data);
             })
-    });
+    },[]);
 
     return (
         <View style={styles.screen}>
