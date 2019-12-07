@@ -9,8 +9,6 @@ import BoldText from '../components/BoldText';
 import BodyText from '../components/BodyText';
 import axios from 'axios';
 
-// INFINITE SERVER RESPONSE
-
 const serverUrl = 'http://192.168.137.1:5000';
 const http = axios.create({
     baseURL: serverUrl
@@ -19,7 +17,8 @@ const http = axios.create({
 const Shop = props => {
 
     const [onHome, setOnHome] = useState(false);
-    const [itemList, setItemList] = useState();
+    const [itemList, setItemList] = useState([]);
+
     useEffect(() => {
         setOnHome(true);
         http
@@ -27,7 +26,7 @@ const Shop = props => {
             .then(res => {
                 setItemList(res.data);
             })
-    });
+    }, []);
 
     return (
         <View style={styles.screen}>
