@@ -5,8 +5,7 @@ class User(db.Model):
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
-    # ordered_items = db.relationship('Product', backref='uploaded_item', lazy=True)
-    # bought_items = db.relationship('Product', backref='cart_item', lazy=True)
+    cart_items = db.relationship('Product', backref='user_cart', lazy=True)
 
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"
@@ -18,8 +17,18 @@ class Product(db.Model):
     company = db.Column(db.String(20), nullable=False)
     price = db.Column(db.String(20), nullable=False)
     description = db.Column(db.Text, nullable=False)
-    # consumer_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    # seller_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    consumer_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'image_file': self.image_file,
+            'name': self.name,
+            'company': self.company,
+            'price': self.price,
+            'description': self.description,
+            'consumer_id': self.consumer_id
+        }
 
     def __repr__(self):
         return f"Product('{self.name}', '{self.company}', '{self.price}', '{self.description}')"

@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { View, FlatList, StyleSheet, Image, AsyncStorage, BackHandler } from 'react-native';
+import { View, FlatList, StyleSheet, Image, AsyncStorage, BackHandler, ToastAndroid } from 'react-native';
 import Card from '../components/Card';
 import Header from '../components/Header';
 import { Ionicons } from '@expo/vector-icons';
@@ -21,10 +21,14 @@ const Shop = props => {
 
     useEffect(() => {
         setOnHome(true);
+        temp = null
         http
             .post('/home', {onHome})
             .then(res => {
+                console.log('in .then');
+                // res.data is non null on console logging
                 setItemList(res.data);
+                console.log(itemList);
             })
     }, []);
 
@@ -52,7 +56,18 @@ const Shop = props => {
                             <BodyText style={{marginVertical: 2}}>{item.price}</BodyText>
                             <View style={styles.buttonContainer}>
                                 <CustomButton onPress={() => props.navigation.navigate('Details')}>VIEW DETAILS</CustomButton>
-                                <CustomButton>TO CART</CustomButton>
+                                <CustomButton onPress={() => {
+                                    product_id = item.id;
+                                    http
+                                        .post('/home/cart', {product_id})
+                                        .then(res => {
+                                            if(res.added_to_cart){
+                                                ToastAndroid.show('Added to cart!', ToastAndroid.SHORT);
+                                            }
+                                        })
+                                }}>
+                                    TO CART
+                                </CustomButton>
                             </View>
                         </Card>
                     )}
