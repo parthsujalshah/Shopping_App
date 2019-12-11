@@ -39,7 +39,6 @@ const Shop = props => {
         );
 
         if(itemList.length != 0) {
-            // console.log(itemList[1])
             listOrLoader = (
                 <FlatList
                     data={itemList}
@@ -64,7 +63,7 @@ const Shop = props => {
                                     http
                                         .post('/home/cart', {product_id})
                                         .then(res => {
-                                            if(res.added_to_cart){
+                                            if(res.data.added_to_cart){
                                                 ToastAndroid.show('Added to cart!', ToastAndroid.SHORT);
                                             }
                                         })

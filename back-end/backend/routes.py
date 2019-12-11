@@ -42,6 +42,10 @@ products = [
     ),
 ]
 
+def temp():
+    for p in products:
+        db.session.add(p)
+    db.session.commit()
 
 @app.route('/register', methods=['GET','POST'])
 def register():
@@ -92,15 +96,10 @@ def logout():
 @app.route('/home', methods=['GET', 'POST'])
 def home():
     return_list = []
-    for p in products:
-        if Product.query.filter_by(name=p.name).first():
-            print('Already added')
-        else:
-            db.session.add(p)
-            db.session.commit()
+    temp()
+    prod_list = Product.query.all()
+    for p in prod_list:
         return_list.append(p.to_dict())
-        print(p.to_dict())
-        # print(return_list)
     return jsonify(return_list)
 
 @app.route('/home/cart', methods=['GET', 'POST'])
