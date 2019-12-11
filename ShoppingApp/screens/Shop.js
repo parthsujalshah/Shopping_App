@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { View, FlatList, StyleSheet, Image, AsyncStorage, BackHandler, ToastAndroid } from 'react-native';
+import { View, FlatList, StyleSheet, Image, AsyncStorage, BackHandler, ToastAndroid, ActivityIndicator } from 'react-native';
 import Card from '../components/Card';
 import Header from '../components/Header';
 import { Ionicons } from '@expo/vector-icons';
@@ -21,16 +21,65 @@ const Shop = props => {
 
     useEffect(() => {
         setOnHome(true);
-        temp = null
+        const fetchAndset = async () => {
+            
+        }
         http
             .post('/home', {onHome})
             .then(res => {
-                console.log('in .then');
-                // res.data is non null on console logging
                 setItemList(res.data);
-                console.log(itemList);
             })
-    }, []);
+            .catch(err => console.log(err))
+        }, []);
+
+        let listOrLoader = (
+            <View>
+                <ActivityIndicator size="large" color="#0000ff" />
+            </View>
+        );
+
+        if(itemList.length != 0) {
+            // console.log(itemList[1])
+            listOrLoader = (
+                <FlatList
+                    data={itemList}
+                    renderItem={({ item }) => (
+                        <Card style={styles.card}>
+                            <View style={styles.image}>
+                                <Image 
+                                    style={{ width: '100%', height: '100%' }} 
+                                    source={{uri: `data:image/gif;base64,${item.image_file.slice(2)}`}}
+                                />
+                            </View>
+                            <BoldText style={{marginVertical: 2}}>{item.name}</BoldText>
+                            <BodyText style={{marginVertical: 2}}>{item.price}</BodyText>
+                            <View style={styles.buttonContainer}>
+                                <CustomButton 
+                                    onPress={() => props.navigation.navigate('Details')}
+                                >
+                                VIEW DETAILS
+                                </CustomButton>
+                                <CustomButton onPress={() => {
+                                    product_id = item.id;
+                                    http
+                                        .post('/home/cart', {product_id})
+                                        .then(res => {
+                                            if(res.added_to_cart){
+                                                ToastAndroid.show('Added to cart!', ToastAndroid.SHORT);
+                                            }
+                                        })
+                                        .catch(err => console.log(err))
+                                }}>
+                                    TO CART
+                                </CustomButton>
+                            </View>
+                        </Card>
+                    )}
+                    extraData={itemList}
+                    keyExtractor={(item, index) => index.toString()}
+                />
+            );
+        }
 
     return (
         <View style={styles.screen}>
@@ -42,38 +91,7 @@ const Shop = props => {
                 <Ionicons name='ios-cart' size={35} color='white' />
             </Header>
             <View style={styles.list}>
-                <FlatList
-                    data={itemList}
-                    renderItem={({ item }) => (
-                        <Card style={styles.card}>
-                            <View style={styles.image}>
-                                <Image 
-                                    style={{ width: '100%', height: '100%' }} 
-                                    source={{uri: `data:image/gif;base64,${item.image.slice(2)}`}}
-                                />
-                            </View>
-                            <BoldText style={{marginVertical: 2}}>{item.name}</BoldText>
-                            <BodyText style={{marginVertical: 2}}>{item.price}</BodyText>
-                            <View style={styles.buttonContainer}>
-                                <CustomButton onPress={() => props.navigation.navigate('Details')}>VIEW DETAILS</CustomButton>
-                                <CustomButton onPress={() => {
-                                    product_id = item.id;
-                                    http
-                                        .post('/home/cart', {product_id})
-                                        .then(res => {
-                                            if(res.added_to_cart){
-                                                ToastAndroid.show('Added to cart!', ToastAndroid.SHORT);
-                                            }
-                                        })
-                                }}>
-                                    TO CART
-                                </CustomButton>
-                            </View>
-                        </Card>
-                    )}
-                    extraData={itemList}
-                    keyExtractor={(item, index) => index.toString()}
-                />
+                {listOrLoader}
             </View>
         </View>
     );

@@ -99,6 +99,8 @@ def home():
             db.session.add(p)
             db.session.commit()
         return_list.append(p.to_dict())
+        print(p.to_dict())
+        # print(return_list)
     return jsonify(return_list)
 
 @app.route('/home/cart', methods=['GET', 'POST'])
