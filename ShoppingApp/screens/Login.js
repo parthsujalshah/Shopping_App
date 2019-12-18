@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {View, StatusBar, TextInput, AsyncStorage, ActivityIndicator, StyleSheet} from 'react-native';
+import {View, StatusBar, TextInput, AsyncStorage, ActivityIndicator, StyleSheet, ToastAndroid} from 'react-native';
 import {Button} from 'native-base';
 import BoldText from '../components/BoldText';
 import BodyText from '../components/BodyText';
@@ -43,7 +43,13 @@ const LoginRegister = props => {
                 password
             })
             .then(res => {
-                SetToken(res.data.token, props);
+                if(res.data.token!==""){
+                    SetToken(res.data.token, props);
+                    props.navigation.navigate('Shop');
+                }
+                else {
+                    ToastAndroid.show('Please use a valid email & password', ToastAndroid.SHORT);
+                }
             })
             .catch(err => 
                 console.log(err)
@@ -52,7 +58,6 @@ const LoginRegister = props => {
 
     const SetToken = async (token, props) => {
         await AsyncStorage.setItem("auth_token", token);
-        props.navigation.navigate('Shop')
     };
 
     // let loader = (

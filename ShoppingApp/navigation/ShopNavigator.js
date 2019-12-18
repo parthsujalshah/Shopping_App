@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {SafeAreaView, ScrollView, Dimensions, View} from 'react-native';
+import {SafeAreaView, ScrollView, AsyncStorage, View} from 'react-native';
 import {createAppContainer, createSwitchNavigator} from 'react-navigation';
 import {createDrawerNavigator, DrawerItems} from 'react-navigation-drawer';
 import {createStackNavigator} from 'react-navigation-stack';
@@ -51,6 +51,7 @@ const DrawerStyle = (props) => (
                         .post('/logout')
                         .then(res => {
                                 isLoggedIn = res.data.logged_in;
+                                // await AsyncStorage.setItem("auth_token", "")
                             }
                         )
                         if(!isLoggedIn){

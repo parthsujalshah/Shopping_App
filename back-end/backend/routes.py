@@ -70,14 +70,12 @@ def login():
         t = token_hex(16)
         global current_user
         current_user = user
-        return jsonify({
-            'token': t
-        })
     else:
         print('Login unsuccessful')
     return jsonify({
         'status': 'OK',
-        'message': "Successfully logged in user!"
+        'message': "Successfully logged in user!",
+        'token': t
     })
 
 @app.route('/login-check', methods=['GET', 'POST'])
@@ -106,19 +104,16 @@ def home():
 def pid():
     product_id = request.json.get('product_id', None)
     cart_item = Product.query.get(product_id)
-    cart_item.user_cart = current_user
+    for prod in Product.query.all():
+        if current_user not in prod.in_cart_of:
+            cart_item.in_cart_of.append(current_user)
+            db.session.commit()            
     return jsonify({'added_to_cart': True})
 
-@app.route('/test', methods=['GET', 'POST'])
-def test():
-    p = Product(
-        image_file = 'str(encoded_string)', 
-        name = 'item1', 
-        company = 'xyz', 
-        price = '$30', 
-        description = 'Lorem Ipsum'
-    )
-    db.session.add(p)
-    db.session.commit()
-    p = Product.query.get(1)
-    return jsonify(p.to_dict())
+@app.route('/cart', methods=['GET', 'POST'])
+def cart():
+    cart_of_user = []
+    for prod in Product.query.all():
+        if current_user in prod.in_cart_of:
+            cart_of_user.append(prod.to_dict())
+    return jsonify({'cart_of_user': cart_of_user})
