@@ -9,28 +9,40 @@ import BoldText from '../components/BoldText';
 import BodyText from '../components/BodyText';
 import axios from 'axios';
 
-const serverUrl = 'http://192.168.137.1:5000';
-const http = axios.create({
-    baseURL: serverUrl
-});
-
 const Shop = props => {
 
     const [onHome, setOnHome] = useState(false);
     const [itemList, setItemList] = useState([]);
+    const [token, setToken] = useState();
+    const serverUrl = 'http://192.168.137.1:5000';
+    const http = axios.create({
+        baseURL: serverUrl,
+        headers: {
+            'x-access-token': token
+        }
+    });
 
     useEffect(() => {
         setOnHome(true);
-        const fetchAndset = async () => {
-            
-        }
-        http
-            .post('/home', {onHome})
-            .then(res => {
-                setItemList(res.data);
-            })
-            .catch(err => console.log(err))
-        }, []);
+        const getToken = async () => {
+            tkn = await AsyncStorage.getItem("auth_token");
+            setToken(tkn);
+            const serverUrl = 'http://192.168.137.1:5000';
+            const http = axios.create({
+                baseURL: serverUrl,
+                headers: {
+                    'x-access-token': tkn
+                }
+            });
+            http
+                .post('/home', {onHome})
+                .then(res => {
+                    setItemList(res.data);
+                })
+                .catch(err => console.log(err))
+            };
+        getToken();
+    }, []);
 
         let listOrLoader = (
             <View>

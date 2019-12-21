@@ -13,42 +13,22 @@ const http = axios.create({
 
 const LoginRegister = props => {
 
-    const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [Token, setToken] = useState("");
-    const [loading, setLoading] = useState(true);
-    const getToken = async () => {
-        tkn = await AsyncStorage.getItem("auth_token");
-        return tkn
-    };
-
-    useEffect(() => {
-        tkn = getToken();
-        http
-            .post('/login-check', {
-                tkn
-            })
-            .then(res => {
-                setLoading(false);
-                if(res.data.logged_in){
-                    props.navigation.navigate('Shop');
-                }
-            })
-    }, []);
 
     const logIn = () => {
         http
             .post('/login', {
-                email,
+                username,
                 password
             })
             .then(res => {
-                if(res.data.token!==""){
+                if(res.data.token){
                     SetToken(res.data.token, props);
                     props.navigation.navigate('Shop');
                 }
                 else {
-                    ToastAndroid.show('Please use a valid email & password', ToastAndroid.SHORT);
+                    ToastAndroid.show('Please use a valid username & password', ToastAndroid.SHORT);
                 }
             })
             .catch(err => 
@@ -75,11 +55,11 @@ const LoginRegister = props => {
             <Card style={{alignItems: 'flex-start'}}>
                 <BoldText style={{fontSize: 30}}>Log In</BoldText>
                 <View style={{margin: 10}}>
-                    <BodyText style={{fontSize: 20}} keyboardType="email-address">Email</BodyText>
+                    <BodyText style={{fontSize: 20}} keyboardType="email-address">Username</BodyText>
                     <TextInput 
                         style={{paddingLeft: 5, width: 300, borderColor: '#474242', borderWidth: 1, borderRadius: 3}}
-                        onChangeText={email => setEmail(email)}
-                        value={email}
+                        onChangeText={username => setUsername(username)}
+                        value={username}
                     />
                 </View>
                 <View style={{margin: 10}}>

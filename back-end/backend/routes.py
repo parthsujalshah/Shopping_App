@@ -1,12 +1,14 @@
-from backend.models import User, Product # image_file commented in Product in models
+from backend.models import User, Product
 from backend import db, app
 from secrets import token_hex
 import base64
+import uuid
+from werkzeug.security import generate_password_hash, check_password_hash
+import jwt
+import datetime
+from functools import wraps
 
 from flask import request, abort, jsonify
-
-t = ""
-current_user = None
 
 with open("C:\\Users\\Lenovo\\Documents\\Projects\\AppDevelopment\\Shopping_App\\back-end\\backend\\static\\images\\test.jpg", "rb") as image_file:
     encoded_string = base64.b64encode(image_file.read())
@@ -27,7 +29,7 @@ products = [
         description = 'Lorem Ipsum'
     ),
     Product(
-        image_file = str(encoded_string), 
+        image_file = str(encoded_string),
         name = 'item3', 
         company = 'xyz', 
         price = '$30', 
@@ -42,76 +44,83 @@ products = [
     ),
 ]
 
-def temp():
-    for p in products:
-        db.session.add(p)
-    db.session.commit()
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+        if 'x-access-token' in request.headers:
+            token = request.headers['x-access-token']
+        if not token:
+            return jsonify({'message': 'token is missing'}), 401
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'])
+            current_user = User.query.filter_by(id=data['user_id']).first()
+        except:
+            return jsonify({'message': 'Token is Invalid!'}), 401
+        return f(current_user, *args, **kwargs)
+    return decorated
 
 @app.route('/register', methods=['GET','POST'])
 def register():
-    username = request.json.get('username', None)   
+    username = request.json.get('username', None)    
     email = request.json.get('email', None)   
     password = request.json.get('password', None)
-    user = User(username=username, email=email, password=password)
+    hashed_password = generate_password_hash(request.json.get('password', None))
+    user = User(username=username, email=email, password=hashed_password)
     db.session.add(user)
     db.session.commit()
-    return jsonify({
-        'status': 'OK',
-        'message': "Successfully registered user!"
-    })
+    return jsonify({'message': "Successfully registered user!"})
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    email = request.json.get('email', None)   
-    password = request.json.get('password', None)
-    user = User.query.filter_by(email=email).first()
-    if user and user.password==password: 
-        global t
-        t = token_hex(16)
-        global current_user
-        current_user = user
-    else:
-        print('Login unsuccessful')
-    return jsonify({
-        'status': 'OK',
-        'message': "Successfully logged in user!",
-        'token': t
-    })
+    if not request.json.get('username') or not request.json.get('password'):
+        return jsonify({'message': 'Could not verify'})
+    user = User.query.filter_by(username=request.json.get('username')).first()
 
-@app.route('/login-check', methods=['GET', 'POST'])
-def check_user():
-    token = request.json.get('Token', None)
-    return jsonify({'logged_in': True}) if token == t else jsonify({'logged_in': False})
+    if not user:
+        return jsonify({'message': 'Could not verify'})
+    if check_password_hash(user.password, request.json.get('password')):
+        token = jwt.encode(
+            {
+                'user_id': user.id,
+                'username': user.username,
+            },
+            app.config['SECRET_KEY']
+        )
+        return jsonify({'token': token.decode('UTF-8')})
+    return jsonify({'message': 'Could not verify'})
 
 @app.route('/logout', methods=['GET', 'POST'])
-def logout():
-    global t
-    t = ""
-    global current_user
-    current_user = None
+@token_required
+def logout(current_user):
     return jsonify({'logged_in': False})
 
 @app.route('/home', methods=['GET', 'POST'])
-def home():
+@token_required
+def home(current_user):
     return_list = []
-    temp()
+    for product in products:
+        db.session.add(product)
+    db.session.commit()
     prod_list = Product.query.all()
     for p in prod_list:
         return_list.append(p.to_dict())
     return jsonify(return_list)
 
 @app.route('/home/cart', methods=['GET', 'POST'])
-def pid():
+@token_required
+def pid(current_user):
     product_id = request.json.get('product_id', None)
     cart_item = Product.query.get(product_id)
-    for prod in Product.query.all():
-        if current_user not in prod.in_cart_of:
-            cart_item.in_cart_of.append(current_user)
-            db.session.commit()            
+    if current_user not in cart_item.in_cart_of:
+        cart_item.in_cart_of.append(current_user)
+        db.session.commit()
+    print(Product.query.all())
     return jsonify({'added_to_cart': True})
 
 @app.route('/cart', methods=['GET', 'POST'])
-def cart():
+@token_required
+def cart(current_user):
     cart_of_user = []
     for prod in Product.query.all():
         if current_user in prod.in_cart_of:
