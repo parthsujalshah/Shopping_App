@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {View, StatusBar, TextInput, AsyncStorage, ActivityIndicator, StyleSheet, ToastAndroid} from 'react-native';
 import {Button} from 'native-base';
 import BoldText from '../components/BoldText';
@@ -40,15 +40,6 @@ const LoginRegister = props => {
         await AsyncStorage.setItem("auth_token", token);
     };
 
-    // let loader = (
-    //     <View style={[styles.container, styles.horizontal]}>
-    //         <ActivityIndicator size="large" color="#0000ff" />
-    //     </View>
-    // );
-    // if(!loading){
-    //     loader = null
-    // }
-    
     return(
         <View style={{flex: 1, alignItems: 'center', paddingTop: StatusBar.currentHeight }}>
             <BoldText style={{fontSize: 40, padding: 50, color: '#e3c139'}}>Shop Here!</BoldText>

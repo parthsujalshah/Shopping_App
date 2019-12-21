@@ -115,7 +115,6 @@ def pid(current_user):
     if current_user not in cart_item.in_cart_of:
         cart_item.in_cart_of.append(current_user)
         db.session.commit()
-    print(Product.query.all())
     return jsonify({'added_to_cart': True})
 
 @app.route('/cart', methods=['GET', 'POST'])

@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { View, FlatList, StyleSheet, Image, AsyncStorage, BackHandler, ToastAndroid, ActivityIndicator } from 'react-native';
+import { View, FlatList, StyleSheet, Image, AsyncStorage, ToastAndroid, ActivityIndicator } from 'react-native';
 import Card from '../components/Card';
 import Header from '../components/Header';
 import { Ionicons } from '@expo/vector-icons';
@@ -50,7 +50,7 @@ const Shop = props => {
             </View>
         );
 
-        if(itemList.length != 0) {
+        if(itemList.length !== 0) {
             listOrLoader = (
                 <FlatList
                     data={itemList}
