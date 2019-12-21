@@ -6,7 +6,7 @@ import BoldText from '../components/BoldText';
 import BodyText from '../components/BodyText';
 
 const Cart = props => {
-    const [cart, setCart] = useState([]);
+    const [cart, setCart] = useState();
     useEffect(() => {
         const getToken = async () => {
             tkn = await AsyncStorage.getItem("auth_token");
@@ -21,18 +21,17 @@ const Cart = props => {
                 .post('/cart')
                 .then(res => {
                     setCart(res.data.cart_of_user);
-                    console.log(cart);
                 })
                 .catch(err => console.log(err))
             };
         getToken();
-    }, [cart]);
+    }, [props.navigation.state.params.itemsInCart]);
     let listOrLoader = (
         <View>
             <ActivityIndicator size="large" color="#0000ff" />
         </View>
     );
-    if(cart.length !== 0){
+    if(cart){
         listOrLoader = (
             <FlatList
                 data={cart}

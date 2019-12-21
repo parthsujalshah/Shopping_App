@@ -125,3 +125,17 @@ def cart(current_user):
         if current_user in prod.in_cart_of:
             cart_of_user.append(prod.to_dict())
     return jsonify({'cart_of_user': cart_of_user})
+
+@app.route('/upload', methods=['GET', 'POST'])
+@token_required
+def upload(current_user):
+    image_file = request.json.get('image_file', None)
+    name = request.json.get('name', None)
+    company = request.json.get('company', None)
+    price = request.json.get('price', None)
+    description = request.json.get('description', None)
+    if image_file and name and company and price and description:
+        uploaded_by = current_user
+        return jsonify({'uploaded': True})
+    else:
+        return jsonify({'uploaded': False})

@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {SafeAreaView, ScrollView, AsyncStorage, View} from 'react-native';
 import {createAppContainer, createSwitchNavigator} from 'react-navigation';
 import {createDrawerNavigator, DrawerItems} from 'react-navigation-drawer';
@@ -7,18 +7,13 @@ import {createStackNavigator} from 'react-navigation-stack';
 import ShopScreen from '../screens/Shop';
 import CartScreen from '../screens/Cart';
 import DetailsScreen from '../screens/Details';
-import EditProductsScreen from '../screens/EditProduct';
+import EditProductsScreen from '../screens/AddProduct';
 import OrdersScreen from '../screens/Orders';
 import LoginScreen from '../screens/Login';
 import RegisterScreen from '../screens/Register';
 import { Text, Image } from 'react-native';
 import { Button } from 'native-base';
 import axios from 'axios';
-
-const serverUrl = 'http://192.168.137.1:5000';
-const http = axios.create({
-    baseURL: serverUrl
-});
 
 let isLoggedIn = true; //if initialized null it is considered to be false in if statement
 
@@ -47,16 +42,25 @@ const DrawerStyle = (props) => (
                     marginVertical: 30
                 }}
                 onPress={() => {
-                    http
-                        .post('/logout')
-                        .then(res => {
-                                isLoggedIn = res.data.logged_in;
-                                // await AsyncStorage.setItem("auth_token", "")
+                    const removeToken = async () => {
+                        token = await AsyncStorage.getItem("auth_token");
+                        const serverUrl = 'http://192.168.137.1:5000';
+                        const http = axios.create({
+                            baseURL: serverUrl,
+                            headers: {
+                                'x-access-token': token
                             }
-                        )
-                        if(!isLoggedIn){
+                        });
+                        await AsyncStorage.setItem("auth_token", "");
+                        http
+                            .post('/logout')
+                            .then(res => {
+                                    isLoggedIn = res.data.logged_in;
+                                }
+                            )
                             props.navigation.navigate('Login');
                         }
+                        removeToken();
                     }
                 }
             >
@@ -73,8 +77,7 @@ const LoginRegisterNavigator = createSwitchNavigator({
             drawerLockMode: 'locked-closed'
         }
     },
-    Register: {screen: RegisterScreen},
-    Shop: {screen: ShopScreen}
+    Register: {screen: RegisterScreen}
 }, {
     headerMode: 'none',
     initialRouteName: 'Login'
@@ -92,7 +95,8 @@ const ShopNavigator = createDrawerNavigator({
     Login: {
         screen: LoginRegisterNavigator,
         navigationOptions: {
-            drawerLabel: () => null
+            drawerLabel: () => null,
+            drawerLockMode: 'locked-closed'
         }
     },
     Shop: {
@@ -117,18 +121,18 @@ const ShopNavigator = createDrawerNavigator({
     EditProducts: {
         screen: EditProductsScreen,
         navigationOptions: {
-            drawerLabel: 'Edit Products'
+            drawerLabel: 'Add Products'
         }
     },
     Orders: {screen: OrdersScreen},
 }, {
     headerMode: 'none',
-    initialRouteName: 'Login',// temporary
-    // initialRouteName: 'Shop',
+    initialRouteName: 'Login',
     contentOptions: {
         activeTintColor: '#fcba03'
     },
-    contentComponent: DrawerStyle
+    contentComponent: DrawerStyle,
+    backBehavior: 'none'
 });
 
 export default createAppContainer(ShopNavigator);

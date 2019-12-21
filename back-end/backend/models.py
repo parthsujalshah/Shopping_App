@@ -18,7 +18,7 @@ class User(db.Model):
         lazy = 'subquery', 
         backref = db.backref('in_cart_of', lazy= True)
     )
-    # cart_items = db.relationship('Product', backref='in_cart_of', lazy=True)
+    uploaded_products = db.relationship('Product', backref='uploaded_by', lazy=True)
 
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"
@@ -30,7 +30,7 @@ class Product(db.Model):
     company = db.Column(db.String(20), nullable=False)
     price = db.Column(db.String(20), nullable=False)
     description = db.Column(db.Text, nullable=False)
-    # user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    seller_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
 
     def to_dict(self):
         return {
@@ -39,8 +39,9 @@ class Product(db.Model):
             'name': self.name,
             'company': self.company,
             'price': self.price,
-            'description': self.description
+            'description': self.description,
+            'uploaded_by': self.uploaded_by
         }
 
     def __repr__(self):
-        return f"Product('{self.name}', '{self.company}', '{self.price}', '{self.description}', '{self.in_cart_of}')"
+        return f"Product('{self.name}', '{self.company}', '{self.price}', '{self.description}', '{self.in_cart_of}', '{self.uploaded_by}')"

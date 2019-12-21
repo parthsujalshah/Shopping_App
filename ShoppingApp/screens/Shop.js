@@ -4,7 +4,6 @@ import Card from '../components/Card';
 import Header from '../components/Header';
 import { Ionicons } from '@expo/vector-icons';
 import CustomButton from '../components/CustomButton';
-import itemList from '../constants/ItemList';
 import BoldText from '../components/BoldText';
 import BodyText from '../components/BodyText';
 import axios from 'axios';
@@ -14,6 +13,8 @@ const Shop = props => {
     const [onHome, setOnHome] = useState(false);
     const [itemList, setItemList] = useState([]);
     const [token, setToken] = useState();
+    const [cartCount, setCartCount] = useState(0);
+
     const serverUrl = 'http://192.168.137.1:5000';
     const http = axios.create({
         baseURL: serverUrl,
@@ -72,6 +73,7 @@ const Shop = props => {
                                 </CustomButton>
                                 <CustomButton onPress={() => {
                                     product_id = item.id;
+                                    setCartCount(cartCount+1);
                                     http
                                         .post('/home/cart', {product_id})
                                         .then(res => {
@@ -96,7 +98,9 @@ const Shop = props => {
         <View style={styles.screen}>
             <Header
                 title="ALL PRODUCTS"
-                onButtonPressed={() => props.navigation.navigate('Cart')}
+                onButtonPressed={() => props.navigation.navigate('Cart', {
+                    itemsInCart: cartCount
+                })}
                 onMenuPressed={() => props.navigation.openDrawer()}
             >
                 <Ionicons name='ios-cart' size={35} color='white' />
