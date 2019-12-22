@@ -10,40 +10,6 @@ from functools import wraps
 
 from flask import request, abort, jsonify
 
-with open("C:\\Users\\Lenovo\\Documents\\Projects\\AppDevelopment\\Shopping_App\\back-end\\backend\\static\\images\\test.jpg", "rb") as image_file:
-    encoded_string = base64.b64encode(image_file.read())
-
-products = [
-    Product(
-        image_file = str(encoded_string), 
-        name = 'item1', 
-        company = 'xyz', 
-        price = '$30', 
-        description = 'Lorem Ipsum'
-    ),
-    Product(
-        image_file = str(encoded_string), 
-        name = 'item2', 
-        company = 'xyz', 
-        price = '$30', 
-        description = 'Lorem Ipsum'
-    ),
-    Product(
-        image_file = str(encoded_string),
-        name = 'item3', 
-        company = 'xyz', 
-        price = '$30', 
-        description = 'Lorem Ipsum'
-    ),
-    Product(
-        image_file = str(encoded_string), 
-        name = 'item4', 
-        company = 'xyz', 
-        price = '$30', 
-        description = 'Lorem Ipsum'
-    ),
-]
-
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -99,12 +65,9 @@ def logout(current_user):
 @token_required
 def home(current_user):
     return_list = []
-    for product in products:
-        db.session.add(product)
-    db.session.commit()
     prod_list = Product.query.all()
-    for p in prod_list:
-        return_list.append(p.to_dict())
+    for product in prod_list:
+        return_list.append(product.to_dict())
     return jsonify(return_list)
 
 @app.route('/home/cart', methods=['GET', 'POST'])
@@ -134,8 +97,18 @@ def upload(current_user):
     company = request.json.get('company', None)
     price = request.json.get('price', None)
     description = request.json.get('description', None)
-    if image_file and name and company and price and description:
-        uploaded_by = current_user
+    if image_file!="" and name!="" and company!="" and price!="" and description!="":
+        product = Product(image_file=image_file, name=name, company=company,price=price, description=description)
+        product.uploaded_by = current_user
+        db.session.add(product)
+        db.session.commit()
         return jsonify({'uploaded': True})
     else:
         return jsonify({'uploaded': False})
+
+@app.route('/details', methods=['GET', 'POST'])
+@token_required
+def details(current_user):
+    product_id = request.json.get('product_id', None)
+    product = Product.query.get(product_id)
+    return jsonify({'product': product.to_dict()})

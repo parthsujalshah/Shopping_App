@@ -19,7 +19,6 @@ class User(db.Model):
         backref = db.backref('in_cart_of', lazy= True)
     )
     uploaded_products = db.relationship('Product', backref='uploaded_by', lazy=True)
-
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"
 
@@ -39,8 +38,7 @@ class Product(db.Model):
             'name': self.name,
             'company': self.company,
             'price': self.price,
-            'description': self.description,
-            'uploaded_by': self.uploaded_by
+            'description': self.description
         }
 
     def __repr__(self):

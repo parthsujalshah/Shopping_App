@@ -11,7 +11,7 @@ import axios from 'axios';
 const Shop = props => {
 
     const [onHome, setOnHome] = useState(false);
-    const [itemList, setItemList] = useState([]);
+    const [itemList, setItemList] = useState();
     const [token, setToken] = useState();
     const [cartCount, setCartCount] = useState(0);
 
@@ -51,7 +51,7 @@ const Shop = props => {
             </View>
         );
 
-        if(itemList.length !== 0) {
+        if(itemList) {
             listOrLoader = (
                 <FlatList
                     data={itemList}
@@ -60,14 +60,35 @@ const Shop = props => {
                             <View style={styles.image}>
                                 <Image 
                                     style={{ width: '100%', height: '100%' }} 
-                                    source={{uri: `data:image/gif;base64,${item.image_file.slice(2)}`}}
+                                    source={{uri: item.image_file}}
                                 />
                             </View>
                             <BoldText style={{marginVertical: 2}}>{item.name}</BoldText>
                             <BodyText style={{marginVertical: 2}}>{item.price}</BodyText>
                             <View style={styles.buttonContainer}>
                                 <CustomButton 
-                                    onPress={() => props.navigation.navigate('Details')}
+                                    onPress={() => {
+                                        product_id = item.id;
+                                        const getToken = async () => {
+                                            tkn = await AsyncStorage.getItem("auth_token");
+                                            const serverUrl = 'http://192.168.137.1:5000';
+                                            const http = axios.create({
+                                                baseURL: serverUrl,
+                                                headers: {
+                                                    'x-access-token': tkn
+                                                }
+                                            });
+                                            http
+                                                .post('/details', {product_id})
+                                                .then(res => {
+                                                    props.navigation.navigate('Details', {
+                                                        product: res.data.product
+                                                    })
+                                                })
+                                                .catch(err => console.log(err))
+                                            };
+                                        getToken();
+                                    }}
                                 >
                                 VIEW DETAILS
                                 </CustomButton>

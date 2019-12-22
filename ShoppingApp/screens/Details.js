@@ -1,30 +1,58 @@
-import React from 'react';
-import { View, StyleSheet, Image, ScrollView } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import React, {useState} from 'react';
+import { 
+    ScrollView, 
+    View, 
+    StyleSheet, 
+    Image, 
+    TextInput, 
+    ToastAndroid, 
+    AsyncStorage, 
+    Button 
+} from 'react-native';
 import Header from '../components/Header';
 import BoldText from '../components/BoldText';
+import BodyText from '../components/BodyText';
 import CustomButton from '../components/CustomButton';
+import { Ionicons } from '@expo/vector-icons';
+import axios from 'axios';
+import * as ImagePicker from 'expo-image-picker';
 
-const Details = props => {
+const AddProduct = props => {
     return (
         <View style={styles.screen}>
-            <Header onMenuPressed={() => props.navigation.openDrawer()}>
-                {/* <Ionicons name='ios-arrow-back' size={35} color='white' /> */}
+            <Header
+                title="DETAILS"
+                onMenuPressed={() => props.navigation.openDrawer()}
+            >
             </Header>
-            <View style={styles.imageView}>
-                <Image style={{ resizeMode: 'center' }} source={require('../assets/images/test.jpg')} />
-            </View>
-            <View>
-                <CustomButton style={styles.cart}>ADD TO CART</CustomButton>
-            </View>
-            <View style={styles.details}>
-                <BoldText>$30</BoldText>
-                <View style={{marginBottom: 40}}>
-                    <ScrollView>
-                        <BoldText>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</BoldText>
-                    </ScrollView>
+            <ScrollView style={styles.scroll}>
+                <View>
+                    <View style={styles.imageView}>
+                        <Image 
+                            style={{ resizeMode: 'center', height: 350, width: 350 }} 
+                            source={{uri: props.navigation.state.params.product.image_file}}
+                        />
+                    </View>
+                    <View style={styles.property}>
+                        <BoldText>NAME: </BoldText>
+                        <BoldText>{props.navigation.state.params.product.name}</BoldText>
+                    </View>
+                    <View style={styles.property}>
+                        <BoldText>COMPANY: </BoldText>
+                        <BoldText>{props.navigation.state.params.product.company}</BoldText>
+                    </View>
+                    <View style={styles.property}>
+                        <BoldText>PRICE: </BoldText>
+                        <BodyText>{props.navigation.state.params.product.price}</BodyText>
+                    </View>
+                    <View style={styles.property}>
+                        <BoldText>DESCRIPTION: </BoldText>
+                        <ScrollView>
+                            <BodyText>{props.navigation.state.params.product.description}</BodyText>
+                        </ScrollView>
+                    </View>
                 </View>
-            </View>
+            </ScrollView>
         </View>
     );
 };
@@ -32,29 +60,23 @@ const Details = props => {
 const styles = StyleSheet.create({
     screen: {
         flex: 1,
-        alignItems: 'center'
+        alignItems: 'center',
     },
     imageView: {
-        marginVertical: 20,
         height: 300,
         width: 300,
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    details: {
-        marginTop: 30,
-        width: '90%',
-        height: '40%',
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    cart: {
+        marginTop: 50,
         alignItems: 'center',
         justifyContent: 'center',
-        height: 40,
-        width: '60%',
-        marginBottom: 10
+        marginBottom: 40,
+        marginLeft: '12%'
+    },
+    property: {
+        marginBottom: 10,
+        borderBottomColor: '#dbd94d',
+        borderBottomWidth: 2,
+        marginLeft: 10
     }
 });
 
-export default Details;
+export default AddProduct;

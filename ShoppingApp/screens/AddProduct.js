@@ -1,19 +1,49 @@
-import React, {useState, useEffect} from 'react';
-import { ScrollView, View, StyleSheet, Image, TextInput, ToastAndroid, AsyncStorage } from 'react-native';
+import React, {useState} from 'react';
+import { 
+    ScrollView, 
+    View, 
+    StyleSheet, 
+    Image, 
+    TextInput, 
+    ToastAndroid, 
+    AsyncStorage, 
+    Button 
+} from 'react-native';
 import Header from '../components/Header';
 import BoldText from '../components/BoldText';
 import CustomButton from '../components/CustomButton';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
-import ImgToBase64 from 'react-native-image-base64';
-// import ImagePicker from 'react-native-image-picker';
+import * as ImagePicker from 'expo-image-picker';
 
 const AddProduct = props => {
 
     const [name, setName] = useState();
+    const [company, setCompany] = useState();
     const [price, setPrice] = useState();
     const [description, setDescription] = useState();
-    const [image, setImage] = useState(require('../assets/images/test.jpg'));
+    const [image, setImage] = useState(); // require('../assets/images/test.jpg')
+    const [responseImage, setResponseImage] = useState();
+
+    const addImage = async type => {
+        if (type==="gallery") {
+            const response = await ImagePicker.launchImageLibraryAsync({
+                allowsEditing: true,
+                aspect: [1, 1]
+            })
+            if(!response.cancelled) {
+                setImage(response.uri);
+            }
+        }else if (type==="camera"){
+            const response = await ImagePicker.launchCameraAsync({
+                allowsEditing: true,
+                aspect: [1, 1]
+            });
+            if (!response.cancelled){
+                setImage(response.uri);
+            }
+        }
+    };
 
     return (
         <View style={styles.screen}>
@@ -31,11 +61,21 @@ const AddProduct = props => {
                         });
                         http
                             .post('/upload', {
-                                "image_file": base64.encode(image)
+                                "image_file": image,
+                                "name": name,
+                                "company": company,
+                                "price": price,
+                                "description": description
                             })
                             .then(res => {
                                 if(res.data.uploaded) {
                                     ToastAndroid.show("Uploaded!", ToastAndroid.SHORT);
+                                    setResponseImage (
+                                        <Image 
+                                            style={{ resizeMode: 'center', height: 350, width: 350 }}
+                                            source={{uri: res.data.image}}
+                                        />
+                                    );
                                 }else{
                                     ToastAndroid.show("Fill all the details", ToastAndroid.SHORT);
                                 }
@@ -43,7 +83,7 @@ const AddProduct = props => {
                             .catch(err => console.log(err))
                         };
                     getToken();
-                    props.navigation.navigate('Shop')
+                    // props.navigation.navigate('Shop')
                 }}
                 onMenuPressed={() => props.navigation.openDrawer()}
             >
@@ -54,15 +94,44 @@ const AddProduct = props => {
                     <View style={styles.imageView}>
                         <Image 
                             style={{ resizeMode: 'center', height: 350, width: 350 }} 
-                            source={image}
+                            source={{uri: image}}
                         />
+                        {responseImage}
                     </View>
                     <View style={styles.property}>
+                        <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+                            <CustomButton 
+                                style={{margin: 20}} 
+                                onPress={() => {addImage("camera")}}
+                            >
+                                Camera
+                            </CustomButton>
+                            <CustomButton 
+                                style={{margin: 20}} 
+                                onPress={() => {props.navigation.navigate('Home')}}
+                            >
+                                Cancel
+                            </CustomButton>
+                            <CustomButton 
+                                style={{margin: 20}} 
+                                onPress={() => {addImage("gallery")}}
+                            >
+                                Gallery
+                            </CustomButton>
+                        </View>
                         <BoldText>NAME: </BoldText>
                         <TextInput 
                             placeholder="Name" 
                             onChangeText={name => setName(name)}
                             value={name}
+                        />
+                    </View>
+                    <View style={styles.property}>
+                        <BoldText>COMPANY: </BoldText>
+                        <TextInput 
+                            placeholder="Company" 
+                            onChangeText={company => setCompany(company)}
+                            value={company}
                         />
                     </View>
                     <View style={styles.property}>
@@ -82,9 +151,6 @@ const AddProduct = props => {
                             value={description}
                         />
                     </View>
-                    <CustomButton>
-                        UPLOAD
-                    </CustomButton>
                 </View>
             </ScrollView>
         </View>

@@ -6,7 +6,9 @@ import BoldText from '../components/BoldText';
 import BodyText from '../components/BodyText';
 
 const Cart = props => {
+
     const [cart, setCart] = useState();
+
     useEffect(() => {
         const getToken = async () => {
             tkn = await AsyncStorage.getItem("auth_token");
@@ -40,12 +42,31 @@ const Cart = props => {
                         <TouchableOpacity 
                             activeOpacity={0.5}
                             style={styles.list}
-                            onPress={() => props.navigation.navigate('Details')}
+                            onPress={() => {
+                                product_id = item.id;
+                                const getToken = async () => {
+                                    tkn = await AsyncStorage.getItem("auth_token");
+                                    const serverUrl = 'http://192.168.137.1:5000';
+                                    const http = axios.create({
+                                        baseURL: serverUrl,
+                                        headers: {
+                                            'x-access-token': tkn
+                                        }
+                                    });
+                                    http
+                                        .post('/details', {product_id})
+                                        .then(res => {
+                                            props.navigation.navigate('Details', {product: res.data.product})
+                                        })
+                                        .catch(err => console.log(err))
+                                    };
+                                getToken();
+                            }}
                         >
                             <View style={styles.imageView}>
                                 <Image 
                                     style={{ resizeMode: 'center', height: 100, width: 100 }} 
-                                    source={{uri: `data:image/gif;base64,${item.image_file.slice(2)}`}}
+                                    source={{uri: item.image_file}}
                                 />
                             </View>
                             <View>
