@@ -1,13 +1,13 @@
-import React, {useState} from 'react';
-import { 
-    ScrollView, 
-    View, 
-    StyleSheet, 
-    Image, 
-    TextInput, 
-    ToastAndroid, 
-    AsyncStorage, 
-    Button 
+import React, { useState } from 'react';
+import {
+    ScrollView,
+    View,
+    StyleSheet,
+    Image,
+    TextInput,
+    ToastAndroid,
+    AsyncStorage,
+    Button
 } from 'react-native';
 import Header from '../components/Header';
 import BoldText from '../components/BoldText';
@@ -26,20 +26,20 @@ const AddProduct = props => {
     const [responseImage, setResponseImage] = useState();
 
     const addImage = async type => {
-        if (type==="gallery") {
+        if (type === "gallery") {
             const response = await ImagePicker.launchImageLibraryAsync({
                 allowsEditing: true,
                 aspect: [1, 1]
             })
-            if(!response.cancelled) {
+            if (!response.cancelled) {
                 setImage(response.uri);
             }
-        }else if (type==="camera"){
+        } else if (type === "camera") {
             const response = await ImagePicker.launchCameraAsync({
                 allowsEditing: true,
                 aspect: [1, 1]
             });
-            if (!response.cancelled){
+            if (!response.cancelled) {
                 setImage(response.uri);
             }
         }
@@ -48,7 +48,7 @@ const AddProduct = props => {
     return (
         <View style={styles.screen}>
             <Header
-                title="ADD PRODUCT" 
+                title="ADD PRODUCT"
                 onButtonPressed={() => {
                     const getToken = async () => {
                         tkn = await AsyncStorage.getItem("auth_token");
@@ -68,20 +68,20 @@ const AddProduct = props => {
                                 "description": description
                             })
                             .then(res => {
-                                if(res.data.uploaded) {
+                                if (res.data.uploaded) {
                                     ToastAndroid.show("Uploaded!", ToastAndroid.SHORT);
-                                    setResponseImage (
-                                        <Image 
+                                    setResponseImage(
+                                        <Image
                                             style={{ resizeMode: 'center', height: 350, width: 350 }}
-                                            source={{uri: res.data.image}}
+                                            source={{ uri: res.data.image }}
                                         />
                                     );
-                                }else{
+                                } else {
                                     ToastAndroid.show("Fill all the details", ToastAndroid.SHORT);
                                 }
                             })
                             .catch(err => console.log(err))
-                        };
+                    };
                     getToken();
                     // props.navigation.navigate('Shop')
                 }}
@@ -92,61 +92,61 @@ const AddProduct = props => {
             <ScrollView style={styles.scroll}>
                 <View>
                     <View style={styles.imageView}>
-                        <Image 
-                            style={{ resizeMode: 'center', height: 350, width: 350 }} 
-                            source={{uri: image}}
+                        <Image
+                            style={{ resizeMode: 'center', height: 350, width: 350 }}
+                            source={{ uri: image }}
                         />
                         {responseImage}
                     </View>
                     <View style={styles.property}>
-                        <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-                            <CustomButton 
-                                style={{margin: 20}} 
-                                onPress={() => {addImage("camera")}}
+                        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                            <CustomButton
+                                style={{ margin: 20 }}
+                                onPress={() => { addImage("camera") }}
                             >
                                 Camera
                             </CustomButton>
-                            <CustomButton 
-                                style={{margin: 20}} 
-                                onPress={() => {props.navigation.navigate('Home')}}
+                            <CustomButton
+                                style={{ margin: 20 }}
+                                onPress={() => { props.navigation.navigate('Home') }}
                             >
                                 Cancel
                             </CustomButton>
-                            <CustomButton 
-                                style={{margin: 20}} 
-                                onPress={() => {addImage("gallery")}}
+                            <CustomButton
+                                style={{ margin: 20 }}
+                                onPress={() => { addImage("gallery") }}
                             >
                                 Gallery
                             </CustomButton>
                         </View>
                         <BoldText>NAME: </BoldText>
-                        <TextInput 
-                            placeholder="Name" 
+                        <TextInput
+                            placeholder="Name"
                             onChangeText={name => setName(name)}
                             value={name}
                         />
                     </View>
                     <View style={styles.property}>
                         <BoldText>COMPANY: </BoldText>
-                        <TextInput 
-                            placeholder="Company" 
+                        <TextInput
+                            placeholder="Company"
                             onChangeText={company => setCompany(company)}
                             value={company}
                         />
                     </View>
                     <View style={styles.property}>
                         <BoldText>PRICE: </BoldText>
-                        <TextInput 
-                            placeholder="Price" 
+                        <TextInput
+                            placeholder="Price"
                             onChangeText={price => setPrice(price)}
                             value={price}
                         />
                     </View>
                     <View style={styles.property}>
                         <BoldText>DESCRIPTION: </BoldText>
-                        <TextInput 
-                            multiline={true} 
-                            placeholder="Description" 
+                        <TextInput
+                            multiline={true}
+                            placeholder="Description"
                             onChangeText={description => setDescription(description)}
                             value={description}
                         />
